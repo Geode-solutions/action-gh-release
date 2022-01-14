@@ -30,10 +30,6 @@ inputs:
   repository:
     description: "Repository to make releases against, in <owner>/<repo> format"
     required: false
-  token:
-    description: "Authorized secret GitHub Personal Access Token. Defaults to github.token"
-    required: false
-    default: ${{ github.token }}
   target_commitish:
     description: "Commitish value that determines where the Git tag is created from. Can be any branch or commit SHA."
     required: false
