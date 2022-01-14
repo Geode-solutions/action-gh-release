@@ -6,10 +6,10 @@ import {
   uploadUrl
 } from "./util";
 import { release, upload, GitHubReleaser } from "./github";
-import { getOctokit } from "@actions/github";
+import { Octokit } from "@octokit/action";
 import { setFailed, setOutput } from "@actions/core";
-import { GitHub, getOctokitOptions } from "@actions/github/lib/utils";
-
+import { retry } from "@octokit/plugin-retry";
+import { throttling } from "@octokit/plugin-throttling";
 import { env } from "process";
 
 async function run() {
@@ -32,13 +32,9 @@ async function run() {
       }
     }
 
-    // const oktokit = GitHub.plugin(
-    //   require("@octokit/plugin-throttling"),
-    //   require("@octokit/plugin-retry")
-    // );
-
-    const gh = getOctokit(config.github_token, {
-      //new oktokit(
+    const OctokitWithPlugins = Octokit.plugin(retry, throttling);
+    const gh = new OctokitWithPlugins({
+      auth: config.github_token,
       throttle: {
         onRateLimit: (retryAfter, options) => {
           console.warn(
